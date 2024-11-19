@@ -8,7 +8,6 @@ const restricted = (req, res, next) => {
     if (token.startsWith("Bearer ")) {
       token = token.slice(7);
     }
-    console.log(token);
 
     jwt.verify(token, JWT_SECRET, (err, decoded) => {
       if (err) {
@@ -25,8 +24,12 @@ const restricted = (req, res, next) => {
 };
 
 // AUTHORIZATION
-const checkRole = (req, res, next) => {
-  next();
+const checkRole = (role) => (req, res, next) => {
+  if (req.decodedJwt && req.decodedJwt.role === role) {
+    next();
+  } else {
+    next({ status: 403, message: `you have no power here!` });
+  }
 };
 
 module.exports = {
